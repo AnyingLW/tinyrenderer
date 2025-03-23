@@ -1,0 +1,15 @@
+﻿  main.cpp
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\tgaimage.h(21,9): warning C4068: 未知的杂注“pach”
+  (编译源文件“main.cpp”)
+  
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(1,1): warning C4103: 包括标题后更改了对齐方式，可能是由于缺少 #pragma pack(pop)
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(10,36): warning C4305: “+=”: 从“double”到“float”截断
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(13,16): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(13,13): warning C4244: “参数”: 从“float”转换到“int”，可能丢失数据
+  tgaimage.cpp
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\tgaimage.h(21,9): warning C4068: 未知的杂注“pach”
+  (编译源文件“tgaimage.cpp”)
+  
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\tgaimage.cpp(6,1): warning C4103: 包括标题后更改了对齐方式，可能是由于缺少 #pragma pack(pop)
+  正在生成代码...
+  tinyrenderer.vcxproj -> C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\x64\Debug\tinyrenderer.exe
