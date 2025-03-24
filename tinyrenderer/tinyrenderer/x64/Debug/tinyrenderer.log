@@ -3,6 +3,82 @@ C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\tgaimage.h(21,9): w
   (编译源文件“main.cpp”)
   
 C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(1,1): warning C4103: 包括标题后更改了对齐方式，可能是由于缺少 #pragma pack(pop)
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(23,10): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(34,10): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(24,10): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(35,10): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,53): warning C4244: “参数”: 从“t”转换到“t”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,53): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,53): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,53): warning C4244:             t=float
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,53): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,53): warning C4244:         and
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,53): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,53): warning C4244:             t=int
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,53): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,30): warning C4244: “参数”: 从“t”转换到“t”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,30): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,30): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,30): warning C4244:             t=float
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,30): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,30): warning C4244:         and
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,30): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,30): warning C4244:             t=int
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(87,30): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,53): warning C4244: “参数”: 从“t”转换到“t”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,53): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,53): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,53): warning C4244:             t=float
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,53): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,53): warning C4244:         and
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,53): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,53): warning C4244:             t=int
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,53): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,30): warning C4244: “参数”: 从“t”转换到“t”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,30): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,30): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,30): warning C4244:             t=float
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,30): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,30): warning C4244:         and
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,30): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,30): warning C4244:             t=int
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(88,30): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,53): warning C4244: “参数”: 从“t”转换到“t”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,53): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,53): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,53): warning C4244:             t=float
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,53): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,53): warning C4244:         and
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,53): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,53): warning C4244:             t=int
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,53): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,30): warning C4244: “参数”: 从“t”转换到“t”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,30): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,30): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,30): warning C4244:             t=float
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,30): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,30): warning C4244:         and
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,30): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,30): warning C4244:             t=int
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(89,30): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,78): warning C4244: “参数”: 从“float”转换到“t”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,78): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,78): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,78): warning C4244:             t=int
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,78): warning C4244:         ]
+  (编译源文件“main.cpp”)
+  C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,78):
+  模板实例化上下文(最早的实例化上下文)为
+  	C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(14,6):
+  	查看对正在编译的 类 模板 实例化“Vec2<int>”的引用
+  	C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,17):
+  	在编译 类 模板 成员函数“Vec2<int> Vec2<int>::operator *(float) const”时
+  		C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(58,16):
+  		请参阅 "triangle" 中对 "Vec2<int>::operator *" 的第一个引用
+  
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,71): warning C4244: “参数”: 从“float”转换到“t”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,71): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,71): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,71): warning C4244:             t=int
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\geometry.h(19,71): warning C4244:         ]
+  (编译源文件“main.cpp”)
+  
   tinyrenderer.vcxproj -> C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\x64\Debug\tinyrenderer.exe

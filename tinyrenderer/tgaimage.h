@@ -1,6 +1,6 @@
 #ifndef _IMAGE_H_
 #define _IMAGE_H_
-
+//定义图像数据保存和输出的格式
 #include<fstream>
 
 #pragma pack(push,1) //告诉编译器按1字节对齐
