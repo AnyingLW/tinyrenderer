@@ -40,10 +40,16 @@ void line(Vec2i t0, Vec2i t1, TGAImage& image, TGAColor color) {
 	}
 }
 
-Vec3f barycentric(Vec2i* pts, Vec2i P) {//线性方程组求重心坐标
-	Vec3f u = Vec3f(pts[1].x - pts[0].x, pts[2].x - pts[0].x, pts[0].x - P.x) ^ Vec3f(pts[1].y - pts[0].y, pts[2].y - pts[0].y, pts[0].y - P.y);
-	if (abs(u.z) < 1)return Vec3f(-1, 1, 1);
-	return Vec3f(u.x / u.z, u.y / u.z, 1.f - (u.x + u.y) / u.z);
+Vec3f barycentric(Vec3f A,Vec3f B,Vec3f C, Vec3f P) {//线性方程组求重心坐标
+	Vec3f s[2];
+	for (int i = 2; i--;) {
+		s[i][0] = C[i] - A[i];
+		s[i][1] = B[i] - A[i];
+		s[i][2] = A[i] - P[i];
+	}
+	Vec3f u = cross(s[0], s[1]);
+	if (abs(u[2]) > 1e-2)return Vec3f(1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);
+	return Vec3f(-1, 1, 1);
 }
 
 void triangle1(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, TGAColor color) {//线性插值绘制三角形
@@ -72,39 +78,51 @@ void triangle1(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, TGAColor color) {/
 	}
 }
 
-void triangle2(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, TGAColor color) {//重心坐标绘制三角形
-	int maxx = max(t0.x, max(t1.x, t2.x)), minx = min(t0.x, min(t1.x, t2.x));
-	int maxy = max(t0.y, max(t1.y, t2.y)), miny = min(t0.y, min(t1.y, t2.y));
-	for (int x = minx; x <= maxx; x++) {
-		for (int y = miny; y <= maxy; y++) {
-			Vec2i pts[3] = { t0,t1,t2 };
-			Vec3f u = barycentric(pts, Vec2i(x, y));
-			if (u.x >= 0 && u.y >= 0 && u.z >= 0)image.set(x, y, color);
+void triangle2(Vec3f *pts,float *zbuffer, TGAImage& image, TGAColor color) {//重心坐标绘制三角形,并采用z-buffer
+	int maxx = max(pts[0].x, max(pts[1].x, pts[2].x)), minx = min(pts[0].x, min(pts[1].x, pts[2].x));
+	int maxy = max(pts[0].y, max(pts[1].y, pts[2].y)), miny = min(pts[0].y, min(pts[1].y, pts[2].y));
+	Vec3f P;
+	for (P.x = minx; P.x <= maxx; P.x++) {
+		for (P.y = miny; P.y <= maxy; P.y++) {
+			Vec3f bc_screen = barycentric(pts[0], pts[1], pts[2], P);
+			if (bc_screen.x < 0 || bc_screen.y < 0 || bc_screen.z < 0)continue;
+			P.z = 0;
+			for (int i = 0; i < 3; i++)P.z += pts[i][2] * bc_screen[i];
+			if (P.z > zbuffer[(int)(P.x + width * P.y)]) {
+				zbuffer[(int)(P.x + width * P.y)] = P.z;
+				image.set(P.x, P.y, color);
+			}
 		}
 	}
 }
 
-void rasterize(Vec2i t0,Vec2i t1,TGAImage&image,TGAColor color,int ybuffer[]) {
-	if (t0.x > t1.x)swap(t0, t1);
-	for (int x = t0.x; x <= t1.x; x++) {
-		float t = (float)(x - t0.x) / (t1.x - t0.x);
-		int y = t0.y + (t1.y - t0.y) * t;
-		if (ybuffer[x] < y) {
-			ybuffer[x] = y;
-			image.set(x, 0, color);
-		}
-	}
+Vec3f world2screen(Vec3f v) {
+	return Vec3f(int((v.x + 1) * width / 2), int((v.y + 1) * height / 2), v.z);
 }
 
 int main() {
 	TGAImage render(width, height, TGAImage::RGB);
-	int ybuffer[width];
-	for (int i = 0; i < width; i++) {
-		ybuffer[i] = std::numeric_limits<int>::min();
+	Model* model = new Model("obj/african_head.obj");
+	float* zbuffer = new float[width*height];
+	for (int i = 0; i < width * height;++i) {
+		zbuffer[i] = -numeric_limits<float>::max();
 	}
-	rasterize(Vec2i(20, 34), Vec2i(744, 400), render, red, ybuffer);
-	rasterize(Vec2i(120, 434), Vec2i(444, 400), render, green, ybuffer);
-	rasterize(Vec2i(330, 463), Vec2i(594, 200), render, blue, ybuffer);
+	for (int i = 0; i < model->nfaces(); i++) {
+		vector<int>face = model->face(i);
+		Vec3f world_coords[3],screen_coords[3];
+		for (int i = 0; i < face.size(); i++) {
+			world_coords[i] = model->vert(face[i]);
+			screen_coords[i] = world2screen(world_coords[i]);
+		}
+		Vec3f n = cross(world_coords[2] - world_coords[0], world_coords[1] - world_coords[0]);
+		n.normalize();
+		float intensity = n * light_dir;
+		if(intensity>0)
+		triangle2(screen_coords, zbuffer, render, TGAColor(255*intensity, 255 * intensity, 255 * intensity,255));
+	}
+
+	delete model;
+
 	render.flip_vertically();
 	render.write_tga_file("output.tga");
 }
