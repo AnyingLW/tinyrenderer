@@ -8,8 +8,10 @@ using namespace std;
 const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red = TGAColor(255, 0, 0, 255);
 const TGAColor green=TGAColor(0,255,0,255);
+const TGAColor blue = TGAColor(0, 0, 255, 255);
 Model* model = NULL;
 const int width = 800, height = 800;
+Vec3f light_dir(0, 0, -1);
 
 void line(Vec2i t0, Vec2i t1, TGAImage& image, TGAColor color) {
 	//选择x和y中跨越像素更多的一方作为基准，防止出现孔洞
@@ -38,7 +40,13 @@ void line(Vec2i t0, Vec2i t1, TGAImage& image, TGAColor color) {
 	}
 }
 
-void triangle(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, TGAColor color) {
+Vec3f barycentric(Vec2i* pts, Vec2i P) {//线性方程组求重心坐标
+	Vec3f u = Vec3f(pts[1].x - pts[0].x, pts[2].x - pts[0].x, pts[0].x - P.x) ^ Vec3f(pts[1].y - pts[0].y, pts[2].y - pts[0].y, pts[0].y - P.y);
+	if (abs(u.z) < 1)return Vec3f(-1, 1, 1);
+	return Vec3f(u.x / u.z, u.y / u.z, 1.f - (u.x + u.y) / u.z);
+}
+
+void triangle1(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, TGAColor color) {//线性插值绘制三角形
 	if (t0.y == t1.y && t1.y == t2.y)return;
 	if (t0.y > t1.y) {//t0.y<t1.y<t2.y
 		swap(t0, t1);
@@ -64,31 +72,39 @@ void triangle(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, TGAColor color) {
 	}
 }
 
-void triangle2(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, TGAColor color) {
+void triangle2(Vec2i t0, Vec2i t1, Vec2i t2, TGAImage& image, TGAColor color) {//重心坐标绘制三角形
 	int maxx = max(t0.x, max(t1.x, t2.x)), minx = min(t0.x, min(t1.x, t2.x));
 	int maxy = max(t0.y, max(t1.y, t2.y)), miny = min(t0.y, min(t1.y, t2.y));
-	for (int x = minx; x < maxx; x++) {
-		for (int y = miny; y < maxy; y++) {
-			float u = (float)((t0.y - t1.y) * x + (t1.x - t0.x) * y + t0.x * t1.y - t1.x * t0.y) / (float)((t0.y - t1.y) * t2.x + (t1.x - t0.x) * t2.y + t0.x * t1.y - t1.x * t0.y);
-			float v = (float)((t0.y - t2.y) * x + (t2.x - t0.x) * y + t0.x * t2.y - t2.x * t0.y) / (float)((t0.y - t2.y) * t1.x + (t2.x - t0.x) * t1.y + t0.x * t2.y - t2.x * t0.y);
-			if (u > 0 && v > 0 && 1 - u - v > 0)image.set(x, y, color);
+	for (int x = minx; x <= maxx; x++) {
+		for (int y = miny; y <= maxy; y++) {
+			Vec2i pts[3] = { t0,t1,t2 };
+			Vec3f u = barycentric(pts, Vec2i(x, y));
+			if (u.x >= 0 && u.y >= 0 && u.z >= 0)image.set(x, y, color);
+		}
+	}
+}
+
+void rasterize(Vec2i t0,Vec2i t1,TGAImage&image,TGAColor color,int ybuffer[]) {
+	if (t0.x > t1.x)swap(t0, t1);
+	for (int x = t0.x; x <= t1.x; x++) {
+		float t = (float)(x - t0.x) / (t1.x - t0.x);
+		int y = t0.y + (t1.y - t0.y) * t;
+		if (ybuffer[x] < y) {
+			ybuffer[x] = y;
+			image.set(x, 0, color);
 		}
 	}
 }
 
 int main() {
-	TGAImage image(width, height, TGAImage::RGB);
-	Model *model=new Model("obj/african_head.obj");
-	for (int i = 0; i < model->nfaces(); i++) {
-		std::vector<int> face = model->face(i);
-		Vec3f v0 = model->vert(face[0]);
-		Vec3f v1 = model->vert(face[1]);
-		Vec3f v2 = model->vert(face[2]);
-		Vec2i t0((v0.x + 1) * width/2, (v0.y + 1) * height/2);
-		Vec2i t1((v1.x + 1) * width/2, (v1.y + 1) * height/2);
-		Vec2i t2((v2.x + 1) * width/2, (v2.y + 1) * height/2);
-		triangle2(t0, t1, t2, image, red);
+	TGAImage render(width, height, TGAImage::RGB);
+	int ybuffer[width];
+	for (int i = 0; i < width; i++) {
+		ybuffer[i] = std::numeric_limits<int>::min();
 	}
-	image.flip_vertically();
-	image.write_tga_file("output.tga");
+	rasterize(Vec2i(20, 34), Vec2i(744, 400), render, red, ybuffer);
+	rasterize(Vec2i(120, 434), Vec2i(444, 400), render, green, ybuffer);
+	rasterize(Vec2i(330, 463), Vec2i(594, 200), render, blue, ybuffer);
+	render.flip_vertically();
+	render.write_tga_file("output.tga");
 }
