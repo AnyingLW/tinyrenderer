@@ -1,9 +1,9 @@
-#ifndef _IMAGE_H_
-#define _IMAGE_H_
-//定义图像数据保存和输出的格式
-#include<fstream>
+#ifndef __IMAGE_H__
+#define __IMAGE_H__
 
-#pragma pack(push,1) //告诉编译器按1字节对齐
+#include <fstream>
+
+#pragma pack(push,1)
 struct TGA_Header {
 	char idlength;
 	char colormaptype;
@@ -15,10 +15,12 @@ struct TGA_Header {
 	short y_origin;
 	short width;
 	short height;
-	char bitsperpixel;
-	char imagedescriptor;
+	char  bitsperpixel;
+	char  imagedescriptor;
 };
-#pragma pach(pop)
+#pragma pack(pop)
+
+
 
 struct TGAColor {
 	union {
@@ -33,7 +35,7 @@ struct TGAColor {
 	TGAColor() : val(0), bytespp(1) {
 	}
 
-	TGAColor(unsigned char R, unsigned char G, unsigned char B, unsigned char A) : b(B), g(G), r(R), a(A), bytespp(4) {
+	TGAColor(unsigned char R, unsigned char G, unsigned char B, unsigned char A = 255) : b(B), g(G), r(R), a(A), bytespp(4) {
 	}
 
 	TGAColor(int v, int bpp) : val(v), bytespp(bpp) {
@@ -91,4 +93,4 @@ public:
 	void clear();
 };
 
-#endif //_IMAGE_H_
+#endif //__IMAGE_H__

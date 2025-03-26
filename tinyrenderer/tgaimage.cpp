@@ -279,7 +279,7 @@ int TGAImage::get_height() {
 	return height;
 }
 
-bool TGAImage::flip_horizontally() {//翻转x坐标
+bool TGAImage::flip_horizontally() {
 	if (!data) return false;
 	int half = width >> 1;
 	for (int i = 0; i < half; i++) {
@@ -293,7 +293,7 @@ bool TGAImage::flip_horizontally() {//翻转x坐标
 	return true;
 }
 
-bool TGAImage::flip_vertically() {//翻转y坐标
+bool TGAImage::flip_vertically() {
 	if (!data) return false;
 	unsigned long bytes_per_line = width * bytespp;
 	unsigned char* line = new unsigned char[bytes_per_line];
@@ -353,3 +353,4 @@ bool TGAImage::scale(int w, int h) {
 	height = h;
 	return true;
 }
+

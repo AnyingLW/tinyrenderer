@@ -13,10 +13,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{24F5B1F6-08A2-4CF7-9D39-8A7AA4FE5FCB}|tinyrenderer.vcxproj|C:\\Users\\any\\Desktop\\work\\graphics\\tinyrenderer\\tinyrenderer\\model.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{24F5B1F6-08A2-4CF7-9D39-8A7AA4FE5FCB}|tinyrenderer.vcxproj|solutionrelative:model.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24F5B1F6-08A2-4CF7-9D39-8A7AA4FE5FCB}|tinyrenderer.vcxproj|C:\\Users\\any\\Desktop\\work\\graphics\\tinyrenderer\\tinyrenderer\\geometry.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{24F5B1F6-08A2-4CF7-9D39-8A7AA4FE5FCB}|tinyrenderer.vcxproj|solutionrelative:geometry.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,21 +22,8 @@
       "DocumentGroups": [
         {
           "DockedHeight": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 2,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "geometry.h",
-              "DocumentMoniker": "C:\\Users\\any\\Desktop\\work\\graphics\\tinyrenderer\\tinyrenderer\\geometry.h",
-              "RelativeDocumentMoniker": "geometry.h",
-              "ToolTip": "C:\\Users\\any\\Desktop\\work\\graphics\\tinyrenderer\\tinyrenderer\\geometry.h",
-              "RelativeToolTip": "geometry.h",
-              "ViewState": "AQIAAB0AAAAAAAAAAAAawC8AAAA0AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-03-25T07:12:33.45Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Document",
               "DocumentIndex": 1,
@@ -49,9 +32,9 @@
               "RelativeDocumentMoniker": "model.h",
               "ToolTip": "C:\\Users\\any\\Desktop\\work\\graphics\\tinyrenderer\\tinyrenderer\\model.h",
               "RelativeToolTip": "model.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAATAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-03-23T06:48:45.674Z",
+              "WhenOpened": "2025-03-26T09:07:05.597Z",
               "EditorCaption": ""
             },
             {
@@ -62,9 +45,9 @@
               "RelativeDocumentMoniker": "model.cpp",
               "ToolTip": "C:\\Users\\any\\Desktop\\work\\graphics\\tinyrenderer\\tinyrenderer\\model.cpp",
               "RelativeToolTip": "model.cpp",
-              "ViewState": "AQIAACcAAAAAAAAAAAAAAB0AAAAeAAAA",
+              "ViewState": "AQIAABgAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-03-23T06:48:43.56Z",
+              "WhenOpened": "2025-03-26T08:51:58.438Z",
               "EditorCaption": ""
             },
             {
@@ -75,7 +58,7 @@
               "RelativeDocumentMoniker": "main.cpp",
               "ToolTip": "C:\\Users\\any\\Desktop\\work\\graphics\\tinyrenderer\\tinyrenderer\\main.cpp",
               "RelativeToolTip": "main.cpp",
-              "ViewState": "AQIAAF4AAAAAAAAAAAAAAHUAAAAJAAAA",
+              "ViewState": "AQIAAHUAAAAAAAAAAAAAAHcAAAAyAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-03-23T03:18:48.394Z",
               "EditorCaption": ""
