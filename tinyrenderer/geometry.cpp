@@ -62,7 +62,7 @@ Matrix Matrix::transpose() {
     return result;
 }
 
-Matrix Matrix::inverse() {
+Matrix Matrix::inverse() {//ÇóÄæ¾ØÕó
     assert(rows == cols);
     // augmenting the square matrix with the identity matrix of the same dimensions a => [ai]
     Matrix result(rows, cols * 2);

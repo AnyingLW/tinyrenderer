@@ -10,8 +10,33 @@ const TGAColor red = TGAColor(255, 0, 0, 255);
 const TGAColor green=TGAColor(0,255,0,255);
 const TGAColor blue = TGAColor(0, 0, 255, 255);
 Model* model = NULL;
-const int width = 800, height = 800;
+const int width = 800, height = 800, depth = 255;
 Vec3f light_dir(0, 0, -1);
+Vec3f carma_dir(0, 0, 3);
+
+Vec3f m2v(Matrix m) {
+	return Vec3f(m[0][0] / m[3][0], m[1][0] / m[3][0], m[2][0] / m[3][0]);
+}
+
+Matrix v2m(Vec3f v) {
+	Matrix m(4, 1);
+	m[0][0] = v.x;
+	m[1][0] = v.y;
+	m[2][0] = v.z;
+	m[3][0] = 1;
+	return m;
+}
+
+Matrix viewport(int x, int y, int w, int h) {
+	Matrix m = Matrix::identity(4);
+	m[0][3] = x + w / 2.0;
+	m[1][3] = y + h / 2.0;
+	m[2][3] = depth / 2.0;
+	m[0][0] = w / 2.0;
+	m[1][1] = h / 2.0;
+	m[2][2] = depth / 2.0;
+	return m;
+}
 
 void line(Vec2i t0, Vec2i t1, TGAImage& image, TGAColor color) {
 	//选择x和y中跨越像素更多的一方作为基准，防止出现孔洞
@@ -52,25 +77,28 @@ Vec3f barycentric(Vec3f A,Vec3f B,Vec3f C, Vec3f P) {//线性方程组求重心�
 	return Vec3f(-1, 1, 1);
 }
 
-void triangle1(Vec3i t0, Vec3i t1, Vec3i t2,Vec2i uv0,Vec2i uv1,Vec2i uv2, TGAImage& image, float intensity,int *zbuffer) {//线性插值绘制三角形
+void triangle1(Vec3i t0, Vec3i t1, Vec3i t2, Vec2i uv0, Vec2i uv1, Vec2i uv2, TGAImage& image, float intensity, int* zbuffer) {//线性插值绘制三角形
 	if (t0.y == t1.y && t1.y == t2.y)return;
 	if (t0.y > t1.y) {//t0.y<t1.y<t2.y
 		swap(t0, t1);
+		swap(uv0, uv1);
 	}
 	if (t0.y > t2.y) {
 		swap(t0, t2);
+		swap(uv0, uv2);
 	}
 	if (t1.y > t2.y) {
 		swap(t1, t2);
+		swap(uv2, uv1);
 	}
 	int total_height = t2.y - t0.y;
 	for (int i = 0; i < total_height; i++) {
 		bool second_half = i > t1.y - t0.y || t1.y == t0.y;
 		int segment_height = second_half ? t2.y - t1.y : t1.y - t0.y;
 		float alpha = (float)i / total_height;
-		float beta = (float)(i-(second_half?t1.y-t0.y:0)) / segment_height;
-		Vec3i A = t0 + (t2 - t0) * alpha;
-		Vec3i B = second_half ? t1 + (t2 - t1) * beta : t0 + (t1 - t0) * beta;
+		float beta = (float)(i - (second_half ? t1.y - t0.y : 0)) / segment_height;
+		Vec3i A = t0 + Vec3f(t2 - t0) * alpha;
+		Vec3i B = second_half ? t1 + Vec3f(t2 - t1) * beta : t0 + Vec3f(t1 - t0) * beta;
 		Vec2i uvA = uv0 + (uv2 - uv0) * alpha;
 		Vec2i uvB = second_half ? uv1 + (uv2 - uv1) * beta : uv0 + (uv1 - uv0) * beta;
 		if (A.x > B.x) {
@@ -85,7 +113,7 @@ void triangle1(Vec3i t0, Vec3i t1, Vec3i t2,Vec2i uv0,Vec2i uv1,Vec2i uv2, TGAIm
 			if (zbuffer[idx] < P.z) {
 				zbuffer[idx] = P.z;
 				TGAColor color = model->diffuse(uvP);
-				image.set(P.x, P.y, TGAColor(color.r * intensity, color.g * intensity, color.b * intensity, 255));
+				image.set(P.x, P.y, TGAColor(color.r * intensity, color.g * intensity, color.b * intensity));
 			}
 		}
 	}
@@ -100,10 +128,10 @@ void triangle2(Vec3f* pts,Vec2i *uv, float* zbuffer,TGAImage& image,float intens
 			Vec3f bc_screen = barycentric(pts[0], pts[1], pts[2], P);
 			if (bc_screen.x < -0.01 || bc_screen.y < -0.01 || bc_screen.z < -0.01)continue;
 			Vec2i uvP;
-			P.z = bc_screen[0] * pts[0].z + bc_screen[1] * pts[1].z + bc_screen[2] * bc_screen[2];
+			P.z = bc_screen.x * pts[0].z + bc_screen.y * pts[1].z + bc_screen.z * pts[2].z;
 			uvP = uv[0] * bc_screen.x + uv[1] * bc_screen.y + uv[2] * bc_screen.z;//不能用[]
-			if (P.z > zbuffer[(int)(P.x + width * P.y)]) {
-				zbuffer[(int)(P.x + width * P.y)] = P.z;
+			if (P.z > zbuffer[static_cast<int>(P.x + width * P.y)]) {
+				zbuffer[static_cast<int>(P.x + width * P.y)] = P.z;
 				TGAColor color = model->diffuse(uvP);
 				image.set(P.x, P.y, TGAColor(color.r*intensity, color.g * intensity, color.b * intensity, 255));
 			}
@@ -111,23 +139,23 @@ void triangle2(Vec3f* pts,Vec2i *uv, float* zbuffer,TGAImage& image,float intens
 	}
 }
 
-Vec3f world2screen(Vec3f v) {
-	return Vec3f(int((v.x + 1) * width / 2), int((v.y + 1) * height / 2), v.z);
-}
-
 int main() {
 	TGAImage render(width, height, TGAImage::RGB);
 	model = new Model("obj/african_head.obj");//不要重定义
-	float* zbuffer = new float[width*height];
+	float* zbuffer = new float[width*height];//z-buffer
 	for (int i = 0; i < width * height;++i) {
 		zbuffer[i] = numeric_limits<int>::min();
 	}
+	Matrix Projection = Matrix::identity(4);
+	Matrix Viewport = viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
+	Projection[3][2] = -1.f / carma_dir.z;
+
 	for (int i = 0; i < model->nfaces(); i++) {
 		vector<int>face = model->face(i);
 		Vec3f world_coords[3],screen_coords[3];
 		for (int j = 0; j < face.size(); j++) {
 			world_coords[j] = model->vert(face[j]);
-			screen_coords[j] = world2screen(world_coords[j]);
+			screen_coords[j] = m2v(Viewport*Projection*v2m(world_coords[j]));
 		}
 		Vec3f n = (world_coords[2] - world_coords[0]) ^ (world_coords[1] - world_coords[0]);
 		n.normalize();
@@ -135,12 +163,20 @@ int main() {
 		if (intensity > 0) {
 			Vec2i uv[3];
 			for (int j = 0; j < 3; j++)uv[j] = model->uv(i, j);
+			//triangle1(screen_coords[0], screen_coords[1], screen_coords[2], uv[0], uv[1], uv[2], render, intensity, zbuffer);
 			triangle2(screen_coords,uv, zbuffer,render,intensity);
 		}
 	}
-
 	delete model;
-
 	render.flip_vertically();
 	render.write_tga_file("output.tga");
+
+	TGAImage zbimage(width, height, TGAImage::GRAYSCALE);
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			zbimage.set(i, j, TGAColor(zbuffer[i + j*width], 1));
+		}
+	}
+	zbimage.flip_vertically();
+	zbimage.write_tga_file("zbuffer.tga");
 }
