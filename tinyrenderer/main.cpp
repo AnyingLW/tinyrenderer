@@ -1,75 +1,70 @@
-﻿#include"tgaimage.h"
-#include"model.h"
-
+﻿#include<vector>
 #include<iostream>
+
+#include"tgaimage.h"
+#include"model.h"
+#include"geometry.h"
+#include"our_gl.h"
 
 using namespace std;
 
-const TGAColor white = TGAColor(255, 255, 255, 255);
-const TGAColor red = TGAColor(255, 0, 0, 255);
-const TGAColor green=TGAColor(0,255,0,255);
-const TGAColor blue = TGAColor(0, 0, 255, 255);
-
-const int width = 800, height = 800, depth = 255;
-
 Model* model = NULL;
-int* zbuffer = NULL;
-Vec3f light_dir=Vec3f(1, -1, 1).normalize();
+const int width = 800, height = 800;
+
+Vec3f light_dir(1, 1, 1);
 Vec3f eye(1, 1, 3);
 Vec3f center(0, 0, 0);
+Vec3f up(0, 1, 0);
 
-//重心坐标绘制三角形,包含z-buffer、纹理、Gourand着色
-void triangle2(Vec3f* pts, Vec2i* uv, float* intensity, int* zbuffer, TGAImage& image) {
-	int maxx = max(pts[0].x, max(pts[1].x, pts[2].x)), minx = min(pts[0].x, min(pts[1].x, pts[2].x));
-	int maxy = max(pts[0].y, max(pts[1].y, pts[2].y)), miny = min(pts[0].y, min(pts[1].y, pts[2].y));
-	Vec3f P;
-	for (P.x = minx; P.x <= maxx; P.x++) {
-		for (P.y = miny; P.y <= maxy; P.y++) {
-			Vec3f bc_screen = barycentric(pts[0], pts[1], pts[2], P);
-			if (bc_screen.x < -0.01 || bc_screen.y < -0.01 || bc_screen.z < -0.01)continue;
-			Vec2i uvP;
-			float it;
-			P.z = bc_screen.x * pts[0].z + bc_screen.y * pts[1].z + bc_screen.z * pts[2].z;
-			uvP = uv[0] * bc_screen.x + uv[1] * bc_screen.y + uv[2] * bc_screen.z;//不能用[]
-			it= intensity[0] * bc_screen.x + intensity[1] * bc_screen.y + intensity[2] * bc_screen.z;
-			if (P.z > zbuffer[static_cast<int>(P.x + width * P.y)]) {
-				zbuffer[static_cast<int>(P.x + width * P.y)] = P.z;
-				TGAColor color = model->diffuse(uvP);
-				image.set(P.x, P.y, TGAColor(color) * it);//含纹理的Gouraud着色
-				//image.set(P.x, P.y, TGAColor(255,255,255)*it);//不含纹理的Gouraud着色
-			}
-		}
+struct GouraudShader :public IShader {
+	mat<2, 3, float>varying_uv;
+	mat<4, 4, float>uniform_M;
+	mat<4, 4, float>uniform_MIT;
+
+	virtual Vec4f vertex(int iface, int nthvert) {//顶点着色器：计算屏幕坐标及uv坐标
+		varying_uv.set_col(nthvert, model->uv(iface, nthvert));
+		Vec4f gl_Vertex = embed<4>(model->vert(iface, nthvert));
+		return Viewport * Projection * ModelView * gl_Vertex;
 	}
-}
+
+	virtual bool fragment(Vec3f bar, TGAColor& color) {//片段着色器：返回该点对应颜色
+		Vec2f uv = varying_uv * bar;
+		Vec3f n = proj<3>(uniform_MIT * embed<4>(model->normal(uv))).normalize();//uv得到的法线*逆转置矩阵得到正确的法线
+		Vec3f l = proj<3>(uniform_M * embed<4>(light_dir)).normalize();
+		Vec3f r = (n * (n * l * 2.f) - l).normalize();
+		float spec = pow(max(r.z, 0.f), model->specular(uv));
+		float diff = max(0.f, n * l);
+		color = model->diffuse(uv);
+		for (int i = 0; i < 3; i++)color[i] = min<float>(5 + color[i] * (diff + .6 * spec), 255);
+		return false;
+	}
+};
 
 int main() {
-	TGAImage render(width, height, TGAImage::RGB);
-	model = new Model("obj/african_head.obj");//不要重定义
-	zbuffer = new int[width*height];//z-buffer
-	for (int i = 0; i < width * height;++i) {
-		zbuffer[i] = numeric_limits<int>::min();
-	}
+	model = new Model("obj/african_head/african_head.obj");
 
-	Matrix view = lookAt(eye, center, Vec3f(0, 1, 0));
-	Matrix Projection = Matrix::identity(4);
-	Matrix Viewport = viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
-	Projection[3][2] = -1.f / (eye-center).norm();
+	lookat(eye, center, up);
+	viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
+	projection(-1.f / (eye - center).norm());
+	light_dir.normalize();
 
+	TGAImage image(width, height, TGAImage::RGB);
+	TGAImage zbuffer(width, height, TGAImage::GRAYSCALE);
+	GouraudShader shader;
+	shader.uniform_M = Projection * ModelView;
+	shader.uniform_MIT = (Projection * ModelView).invert_transpose();
 	for (int i = 0; i < model->nfaces(); i++) {
-		vector<int>face = model->face(i);
-		Vec3f world_coords[3],screen_coords[3];
-		float intensity[3];
-		Vec2i uv[3];
-		for (int j = 0; j < face.size(); j++) {
-			world_coords[j] = model->vert(face[j]);
-			screen_coords[j] = Vec3f(Viewport*Projection*view*Matrix(world_coords[j]));
-			intensity[j] = model->norm(i, j)*light_dir;
-			uv[j] = model->uv(i, j);
+		Vec4f screen_coords[3];
+		for (int j = 0; j < 3; j++) {
+			screen_coords[j] = shader.vertex(i, j);
 		}
-		//triangle1(screen_coords[0], screen_coords[1], screen_coords[2], uv[0], uv[1], uv[2],intensity[0], intensity[1], intensity[2], render, zbuffer);
-		triangle2(screen_coords,uv,intensity, zbuffer,render);
+		triangle(screen_coords, shader, image, zbuffer);
 	}
-	delete model;
-	render.flip_vertically();
-	render.write_tga_file("output.tga");
+	
+	image.flip_vertically();
+	zbuffer.flip_vertically();
+	image.write_tga_file("output.tga");
+	zbuffer.write_tga_file("zbuffer.tga");
+
+	delete(model);
 }

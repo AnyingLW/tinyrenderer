@@ -77,7 +77,7 @@ void line(Vec2i t0, Vec2i t1, TGAImage& image, TGAColor color) {
     }
 }
 
-void triangle(Vec4f* pts, IShader& shader, TGAImage& image, TGAImage& zbuffer) {
+void triangle(Vec4f* pts, IShader& shader, TGAImage& image, TGAImage& zbuffer) {//重心坐标绘制三角形
     Vec2f bboxmin(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
     Vec2f bboxmax(-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
     for (int i = 0; i < 3; i++) {
@@ -143,6 +143,30 @@ void triangle(Vec4f* pts, IShader& shader, TGAImage& image, TGAImage& zbuffer) {
 //                TGAColor color = model->diffuse(uvP);
 //                //image.set(P.x, P.y, TGAColor(color) * ityP);
 //                image.set(P.x, P.y, TGAColor(255, 255, 255) * ityP);
+//            }
+//        }
+//    }
+//}
+
+////重心坐标绘制三角形,包含z-buffer、纹理、Gourand着色
+//void triangle2(Vec3f* pts, Vec2i* uv, float* intensity, int* zbuffer, TGAImage& image) {
+//    int maxx = max(pts[0].x, max(pts[1].x, pts[2].x)), minx = min(pts[0].x, min(pts[1].x, pts[2].x));
+//    int maxy = max(pts[0].y, max(pts[1].y, pts[2].y)), miny = min(pts[0].y, min(pts[1].y, pts[2].y));
+//    Vec3f P;
+//    for (P.x = minx; P.x <= maxx; P.x++) {
+//        for (P.y = miny; P.y <= maxy; P.y++) {
+//            Vec3f bc_screen = barycentric(pts[0], pts[1], pts[2], P);
+//            if (bc_screen.x < -0.01 || bc_screen.y < -0.01 || bc_screen.z < -0.01)continue;
+//            Vec2i uvP;
+//            float it;
+//            P.z = bc_screen.x * pts[0].z + bc_screen.y * pts[1].z + bc_screen.z * pts[2].z;
+//            uvP = uv[0] * bc_screen.x + uv[1] * bc_screen.y + uv[2] * bc_screen.z;//不能用[]
+//            it = intensity[0] * bc_screen.x + intensity[1] * bc_screen.y + intensity[2] * bc_screen.z;
+//            if (P.z > zbuffer[static_cast<int>(P.x + width * P.y)]) {
+//                zbuffer[static_cast<int>(P.x + width * P.y)] = P.z;
+//                TGAColor color = model->diffuse(uvP);
+//                image.set(P.x, P.y, TGAColor(color) * it);//含纹理的Gouraud着色
+//                //image.set(P.x, P.y, TGAColor(255,255,255)*it);//不含纹理的Gouraud着色
 //            }
 //        }
 //    }
