@@ -18,5 +18,5 @@ struct IShader {
 };
 
 void line(Vec2i t0, Vec2i t1, TGAImage& image, TGAColor color);
-void triangle(Vec4f* pts, IShader& shader, TGAImage& image, TGAImage& zbuffer);
+void triangle(Vec4f* pts, IShader& shader, TGAImage& image, float* zbuffer);
 #endif //_OUR_GL_H_
