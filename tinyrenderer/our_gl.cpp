@@ -103,7 +103,7 @@ void triangle(mat<4, 3, float>& clipc, IShader& shader, TGAImage& image, float* 
             bool discard = shader.fragment(Vec3f(P.x, P.y, frag_depth), bc_clip, color);
             if (!discard) {
                 zbuffer[P.x + P.y * image.get_width()] = frag_depth;
-                image.set(P.x, P.y, color);
+                image.set(P.x,P.y,color);
             }
         }
     }

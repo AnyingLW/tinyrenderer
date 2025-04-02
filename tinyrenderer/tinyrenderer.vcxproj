@@ -134,6 +134,7 @@
     <ClCompile Include="tgaimage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ambient.h" />
     <ClInclude Include="geometry.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="our_gl.h" />
