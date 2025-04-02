@@ -2,15 +2,26 @@
 C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\tgaimage.h(60,59): warning C4244: “=”: 从“float”转换到“unsigned char”，可能丢失数据
   (编译源文件“main.cpp”)
   
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(40,16): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(48,55): warning C4244: “参数”: 从“double”转换到“const _Ty”，可能丢失数据
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(48,55): warning C4244:         with
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(48,55): warning C4244:         [
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(48,55): warning C4244:             _Ty=float
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(48,55): warning C4244:         ]
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(48,51): warning C4244: “=”: 从“const _Ty”转换到“unsigned char”，可能丢失数据
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(48,51): warning C4244:         with
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(48,51): warning C4244:         [
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(48,51): warning C4244:             _Ty=float
-C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(48,51): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(52,31): warning C4244: “参数”: 从“T”转换到“int”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(52,31): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(52,31): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(52,31): warning C4244:             T=float
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(52,31): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(52,18): warning C4244: “参数”: 从“T”转换到“int”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(52,18): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(52,18): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(52,18): warning C4244:             T=float
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(52,18): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(73,41): warning C4244: “参数”: 从“T”转换到“int”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(73,41): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(73,41): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(73,41): warning C4244:             T=float
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(73,41): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(73,28): warning C4244: “参数”: 从“T”转换到“int”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(73,28): warning C4244:         with
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(73,28): warning C4244:         [
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(73,28): warning C4244:             T=float
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(73,28): warning C4244:         ]
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(82,14): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\main.cpp(127,83): warning C4244: “参数”: 从“float”转换到“unsigned char”，可能丢失数据
   tinyrenderer.vcxproj -> C:\Users\any\Desktop\work\graphics\tinyrenderer\tinyrenderer\x64\Debug\tinyrenderer.exe

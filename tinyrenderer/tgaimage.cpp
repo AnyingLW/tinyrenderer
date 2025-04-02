@@ -319,7 +319,7 @@ unsigned char* TGAImage::buffer() {
 }
 
 void TGAImage::clear() {
-    memset((void*)data, 0, width * height * bytespp);
+    memset((void*)data, 0, width * height * bytespp);//复制0到data的前width * height * bytespp个字节，即清零data
 }
 
 bool TGAImage::scale(int w, int h) {

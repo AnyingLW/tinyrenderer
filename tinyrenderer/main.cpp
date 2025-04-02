@@ -17,105 +17,136 @@ Vec3f eye(1, 1, 3);
 Vec3f center(0, 0, 0);
 Vec3f up(0, 1, 0);
 
-struct Shader :public IShader {
-	mat<4, 4, float>uniform_M;
-	mat<4, 4, float>uniform_MIT;
-	mat<4, 4, float>uniform_Mshadow;//用于将屏幕坐标转为阴影缓冲屏幕坐标
-	mat<2, 3, float>varying_uv;
-	mat<3, 3, float>varying_tri;
+TGAImage total(1024, 1024, TGAImage::GRAYSCALE);
+TGAImage occl(1024, 1024, TGAImage::GRAYSCALE);
 
-	Shader(Matrix M,Matrix MIT,Matrix MS):uniform_M(M),uniform_MIT(MIT),uniform_Mshadow(MS),varying_uv(), varying_tri(){}
-
-	virtual Vec4f vertex(int iface, int nthvert) {//顶点着色器：计算屏幕坐标及uv坐标
-		varying_uv.set_col(nthvert, model->uv(iface, nthvert));
-		Vec4f gl_Vertex = Viewport * Projection * ModelView * embed<4>(model->vert(iface, nthvert));
-		varying_tri.set_col(nthvert, proj<3>(gl_Vertex/gl_Vertex[3]));
-		return gl_Vertex;
-	}
-
-	virtual bool fragment(Vec3f bar, TGAColor& color) {//片段着色器：返回该点对应颜色(应用法线贴图及阴影贴图)
-		Vec4f sb_p = uniform_Mshadow * embed<4>(varying_tri * bar);
-		sb_p = sb_p / sb_p[3];//获得在阴影贴图中的uv
-		int idx = int(sb_p[0]) + int(sb_p[1]) * width;
-		float shadow = .3 + .7 * (shadowbuffer[idx] < sb_p[2]+43.34);
-		Vec2f uv = varying_uv * bar;
-		Vec3f n = proj<3>(uniform_MIT * embed<4>(model->normal(uv))).normalize();
-		Vec3f l = proj<3>(uniform_M * embed<4>(light_dir)).normalize();
-		Vec3f r = (n * (n * l * 2.f) - l).normalize();
-		float spec = pow(max(r.z, 0.0f), model->specular(uv));
-		float diff = max(0.f, n * l);
-		color = model->diffuse(uv);
-		for (int i = 0; i < 3; i++)color[i] = min<float>(20 + color[i] * shadow * (1.2 * diff + .6 * spec), 255);
-		return false;
-	}
-};
-
-struct DepthShader :public IShader {
-	mat<3, 3, float>varying_tri;
-
-	DepthShader():varying_tri(){}
+struct ZShader :public IShader {//用于显示本次循环时的渲染结果，非必须
+	mat<4, 3, float>varying_tri;
 
 	virtual Vec4f vertex(int iface, int nthvert) {
-		Vec4f gl_vertex = embed<4>(model->vert(iface, nthvert));
-		gl_vertex = Viewport * Projection * ModelView * gl_vertex;
-		varying_tri.set_col(nthvert, proj<3>(gl_vertex / gl_vertex[3]));//NDC
+		Vec4f gl_vertex = Projection * ModelView * embed<4>(model->vert(iface, nthvert));
+		varying_tri.set_col(nthvert, gl_vertex);
 		return gl_vertex;
 	}
 
-	virtual bool fragment(Vec3f bar, TGAColor& color) {
-		Vec3f p = varying_tri * bar;
-		color = TGAColor(255, 255, 255) * (p.z / 255);
+	virtual bool fragment(Vec3f gl_FragCoord, Vec3f bar, TGAColor& color) {
+		color = TGAColor(255, 255, 255) * ((gl_FragCoord.z + 1.f) / 2.f);
 		return false;
 	}
 };
 
+struct Shader :public IShader {//每次从半球面随机选择一点进行渲染，将本次渲染的深度值计入occl中
+	mat<2, 3, float>varying_uv;
+	mat<4, 3, float>varying_tri;
+
+	virtual Vec4f vertex(int iface, int nthvert) {
+		varying_uv.set_col(nthvert, model->uv(iface, nthvert));
+		Vec4f gl_Vertex = Projection * ModelView * embed<4>(model->vert(iface, nthvert));
+		varying_tri.set_col(nthvert, gl_Vertex);
+		return gl_Vertex;
+	}
+
+	virtual bool fragment(Vec3f gl_FragCoord,Vec3f bar, TGAColor& color) {
+		Vec2f uv = varying_uv * bar;
+		if (abs(shadowbuffer[int(gl_FragCoord.x + gl_FragCoord.y * width)] - gl_FragCoord.z < 1e-2)) {
+			occl.set(uv.x * 1024, uv.y * 1024, TGAColor(255));
+		}
+		color = TGAColor(255, 0, 0);
+		return false;
+	}
+};
+
+struct AOshader:public IShader{
+	mat<2, 3, float>varying_uv;
+	mat<4, 3, float>varying_tri;
+	TGAImage aoimage;
+
+	virtual Vec4f vertex(int iface, int nthvert) {
+		varying_uv.set_col(nthvert, model->uv(iface, nthvert));
+		Vec4f gl_Vertex = Projection * ModelView * embed<4>(model->vert(iface, nthvert));
+		varying_tri.set_col(nthvert, gl_Vertex);
+		return gl_Vertex;
+	}
+
+	virtual bool fragment(Vec3f gl_FragCoord, Vec3f bar, TGAColor& color) {
+		Vec2f uv = varying_uv * bar;
+		int t = aoimage.get(uv.x * 1024, uv.y * 1024)[0];
+		color = TGAColor(t, t, t);
+		return false;
+	}
+};
+
+Vec3f rand_point_on_unit_sphere() {
+	float u = (float)rand() / (float)RAND_MAX;
+	float v = (float)rand() / (float)RAND_MAX;
+	float theta = 2.f * 3.1415926 * u;
+	float phi = acos(2.f * v - 1.f);
+	return Vec3f(sin(phi) * cos(theta), sin(phi) * sin(theta), cos(phi));
+}
+
 int main() {
-	model = new Model("obj/diablo3_pose/diablo3_pose.obj");
+	model = new Model("obj/african_head/african_head.obj");
 	shadowbuffer = new float[width * height];
 	float* zbuffer = new float[width * height];
-	for (int i = 0; i < width * height; i++) {
-		zbuffer[i] = shadowbuffer[i] = -numeric_limits<float>::max();
-	}
-	light_dir.normalize();
-	//////////////////////////////////////////////////////////////////////////
-	//第一次光栅化
-	TGAImage depth(width, height, TGAImage::RGB);
-	lookat(light_dir, center, up);
-	viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
-	projection(0);
-
-	DepthShader depthshader;
-	for (int i = 0; i < model->nfaces(); i++) {
-		Vec4f screen_coords[3];
-		for (int j = 0; j < 3; j++) {
-			screen_coords[j] = depthshader.vertex(i, j);
-		}
-		triangle(screen_coords, depthshader, depth, shadowbuffer);
-	}
-	depth.flip_vertically();
-	depth.write_tga_file("depth.tga");
-
-	Matrix M = Viewport * Projection * ModelView;
-	//////////////////////////////////////////////////////////////////////////
-	//第二次光栅化
-	lookat(eye, center, up);
-	viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
-	projection(0);
-	TGAImage frame(width, height, TGAImage::RGB);
-
-	Shader shader(ModelView, (Projection * ModelView).invert_transpose(), M * (Viewport * Projection * ModelView).invert());
-	for (int i = 0; i < model->nfaces(); i++) {
-		Vec4f screen_coords[3];
-		for (int j = 0; j < 3; j++) {
-			screen_coords[j] = shader.vertex(i, j);
-		}
-		triangle(screen_coords, shader, frame, zbuffer);
-	}
 	
-	frame.flip_vertically();
-	frame.write_tga_file("output.tga");
+	const int nrenders = 100;//控制循环次数，即随机选择的点数
+	for (int iter = 1; iter <= nrenders; iter++) {
+		cerr << iter << "from " << nrenders << endl;
+		for (int i = 0; i < 3; i++)up[i] = (float)rand() / (float)RAND_MAX;
+		eye = rand_point_on_unit_sphere();
+		eye.y = abs(eye.y);
+		cout << "v " << eye << endl;
 
-	delete(model);
-	delete[]zbuffer;
-	delete[]shadowbuffer;
+		for (int i = width * height; i--; shadowbuffer[i] = zbuffer[i] = -std::numeric_limits<float>::max());
+
+		TGAImage frame(width, height, TGAImage::RGB);
+		lookat(eye, center, up);
+		viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
+		projection(0);
+
+		ZShader zshader;
+		for (int i = 0; i < model->nfaces(); i++) {
+			for (int j = 0; j < 3; j++) {
+				zshader.vertex(i, j);
+			}
+			triangle(zshader.varying_tri, zshader, frame, shadowbuffer);
+		}
+		frame.flip_vertically();
+		frame.write_tga_file("framebuffer.tga");
+		Shader shader;
+		occl.clear();
+		for (int i = 0; i < model->nfaces(); i++) {
+			for (int j = 0; j < 3; j++) {
+				shader.vertex(i, j);
+			}
+			triangle(shader.varying_tri, shader, frame, zbuffer);
+		}
+		for (int i = 0; i < 1024; i++) {
+			for (int j = 0; j < 1024; j++) {
+				float tmp = total.get(i, j)[0];
+				total.set(i, j, TGAColor((tmp * (iter - 1) + occl.get(i, j)[0]) / (float)iter + .5f));
+			}
+		}
+	}
+	total.flip_vertically();
+	total.write_tga_file("occlusion.tga");
+	occl.flip_vertically();
+	occl.write_tga_file("occl.tga");
+	
+	TGAImage frame(width, height, TGAImage::RGB);
+	AOshader aoshader;
+	aoshader.aoimage.read_tga_file("occlusion.tga");
+	aoshader.aoimage.flip_vertically();
+	for (int i = 0; i < model->nfaces(); i++) {
+		for (int j = 0; j < 3; j++) {
+			aoshader.vertex(i, j);
+		}
+		triangle(aoshader.varying_tri, aoshader, frame, zbuffer);
+	}
+	frame.flip_vertically();
+	frame.write_tga_file("framebuffer.tga");
+
+	delete[] zbuffer;
+	delete model;
+	delete[] shadowbuffer;
 }
