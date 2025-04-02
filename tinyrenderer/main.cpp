@@ -79,7 +79,7 @@ struct Shader : public IShader {
         float spec = pow(std::max(r.z, 0.0f), model->specular(uv));
         float diff = std::max(0.f, n * l);
         TGAColor c = model->diffuse(uv);
-        for (int i = 0; i < 3; i++) color[i] = std::min<float>(20+c[i] * shadow * (1.2 * diff + .6 * spec), 255);
+        for (int i = 0; i < 3; i++) color[i] = std::min<float>(frame.get(uv.x,uv.y).bgra[i] + c[i] * shadow * (1.2 * diff + .6 * spec), 255);
         return false;
     }
 };
