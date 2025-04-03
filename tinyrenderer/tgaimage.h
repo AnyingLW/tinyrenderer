@@ -60,13 +60,6 @@ struct TGAColor {
         for (int i = 0; i < 4; i++) res.bgra[i] = bgra[i] * intensity;
         return res;
     }
-
-    TGAColor operator+(const TGAColor& other) {//ÖØÐ´+ÔËËã·û
-        int r = this->bgra[0] + other.bgra[0] > 255 ? this->bgra[0] + other.bgra[0] : 255;
-        int g = this->bgra[1] + other.bgra[1] > 255 ? this->bgra[1] + other.bgra[1] : 255;
-        int b = this->bgra[1] + other.bgra[1] > 255 ? this->bgra[1] + other.bgra[1] : 255;
-        return TGAColor(r, g, b, 0);
-    }
 };
 
 

@@ -12,6 +12,7 @@ using namespace std;
 Model* model = NULL;
 float* shadowbuffer = NULL;
 float* zbuffer = NULL;
+float* ambuffer=NULL;//SSAO buffer
 extern int width = 800, height = 800;
 const float MY_PI = 3.1415926;
 
@@ -44,7 +45,7 @@ void ambient() {
 			}
 			total /= (MY_PI / 2) * 8;
 			total = pow(total, 100.f);
-			frame.set(x, y, TGAColor(total * 10, total * 10, total * 10));
+            ambuffer[x + y * width] = total;
 		}
 	}
 
@@ -52,11 +53,11 @@ void ambient() {
 }
 
 struct Shader : public IShader {
-    mat<4, 4, float> uniform_M;   //  Projection*ModelView
-    mat<4, 4, float> uniform_MIT; // (Projection*ModelView).invert_transpose()
-    mat<4, 4, float> uniform_Mshadow; // transform framebuffer screen coordinates to shadowbuffer screen coordinates
-    mat<2, 3, float> varying_uv;  // triangle uv coordinates, written by the vertex shader, read by the fragment shader
-    mat<4, 3, float> varying_tri; // triangle coordinates before Viewport transform, written by VS, read by FS
+    mat<4, 4, float> uniform_M;   
+    mat<4, 4, float> uniform_MIT; 
+    mat<4, 4, float> uniform_Mshadow; 
+    mat<2, 3, float> varying_uv;  
+    mat<4, 3, float> varying_tri; 
 
     Shader(Matrix M, Matrix MIT, Matrix MS) : uniform_M(M), uniform_MIT(MIT), uniform_Mshadow(MS), varying_uv(), varying_tri() {}
 
@@ -68,18 +69,20 @@ struct Shader : public IShader {
     }
 
     virtual bool fragment(Vec3f gl_FragCoord, Vec3f bar, TGAColor& color) {
-        Vec4f sb_p = uniform_Mshadow * embed<4>(varying_tri * bar); // corresponding point in the shadow buffer
+        Vec4f sb_p = uniform_Mshadow * embed<4>(varying_tri * bar); 
         sb_p = sb_p / sb_p[3];
-        int idx = int(sb_p[0]) + int(sb_p[1]) * width; // index in the shadowbuffer array
-        float shadow = .3 + .7 * (shadowbuffer[idx] < sb_p[2]); // magic coeff to avoid z-fighting
-        Vec2f uv = varying_uv * bar;                 // interpolate uv for the current pixel
-        Vec3f n = proj<3>(uniform_MIT * embed<4>(model->normal(uv))).normalize(); // normal
-        Vec3f l = proj<3>(uniform_M * embed<4>(light_dir)).normalize(); // light vector
-        Vec3f r = (n * (n * l * 2.f) - l).normalize();   // reflected light
-        float spec = pow(std::max(r.z, 0.0f), model->specular(uv));
-        float diff = std::max(0.f, n * l);
+        int idx = int(sb_p[0]) + int(sb_p[1]) * width; 
+        float shadow = .3 + .7 * (shadowbuffer[idx] < sb_p[2]); 
+        Vec2f uv = varying_uv * bar;                 
+        Vec3f n = proj<3>(uniform_MIT * embed<4>(model->normal(uv))).normalize(); 
+        Vec3f l = proj<3>(uniform_M * embed<4>(light_dir)).normalize(); 
+        Vec3f r = (n * (n * l * 2.f) - l).normalize();
+        float spec = pow(max(r.z, 0.0f), model->specular(uv));
+        float diff = max(0.f, n * l);
         TGAColor c = model->diffuse(uv);
-        for (int i = 0; i < 3; i++) color[i] = std::min<float>(frame.get(uv.x,uv.y).bgra[i] + c[i] * shadow * (1.2 * diff + .6 * spec), 255);
+        for (int i = 0; i < 3; i++) {
+            color[i] = min<float>(ambuffer[(int)gl_FragCoord[0]+(int)gl_FragCoord[1]*width]*10 + c[i] * shadow * (1.2 * diff + .6 * spec), 255);
+        }
         return false;
     }
 };
@@ -87,6 +90,7 @@ struct Shader : public IShader {
 int main() {
 	model = new Model("obj/diablo3_pose/diablo3_pose.obj");
 	zbuffer = new float[width * height];
+    ambuffer = new float[width * height];
 
 	ambient();
 
@@ -98,7 +102,7 @@ int main() {
 
     light_dir.normalize();
 
-    { // rendering the shadow buffer
+    { 
         TGAImage depth(width, height, TGAImage::RGB);
         lookat(light_dir, center, up);
         viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
@@ -115,7 +119,7 @@ int main() {
 
     Matrix M = Viewport * Projection * ModelView;
 
-    { // rendering the frame buffer
+    { 
         lookat(eye, center, up);
         viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
         projection(-1.f / (eye - center).norm());
@@ -127,7 +131,7 @@ int main() {
             }
             triangle(shader.varying_tri, shader, frame, zbuffer);
         }
-        frame.flip_vertically(); // to place the origin in the bottom left corner of the image
+        frame.flip_vertically(); 
         frame.write_tga_file("phong.tga");
     }
 
